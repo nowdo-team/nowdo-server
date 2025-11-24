@@ -1,4 +1,4 @@
 package com.hsjh.nowdo.repository;
 
-public interface ListRepository {
+public interface TodoRepository {
 }
