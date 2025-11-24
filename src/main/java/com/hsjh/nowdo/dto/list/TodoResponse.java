@@ -1,4 +1,4 @@
 package com.hsjh.nowdo.dto.list;
 
-public class ListRequest {
+public class TodoResponse {
 }
