@@ -2,6 +2,7 @@ package com.hsjh.nowdo.service;
 
 import com.hsjh.nowdo.domain.user.User;
 import com.hsjh.nowdo.domain.user.UserStatus;
+import com.hsjh.nowdo.dto.user.UpdateProfileRequest;
 import com.hsjh.nowdo.dto.user.UserRegisterRequest;
 import com.hsjh.nowdo.dto.user.UserResponse;
 import com.hsjh.nowdo.repository.UserRepository;
@@ -40,4 +41,25 @@ public class UserService {
         // DTO로 변환해서 반환
         return UserResponse.from(saved);
     }
+    // 마이페이지 조회
+    public UserResponse getMyInfo (Long userId){
+        User user = userRepository.findById(userId).orElseThrow(()->
+        new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        return UserResponse.from(user);
+    }
+    // 프로필 수정
+    public UserResponse updateProfile(Long userId, UpdateProfileRequest request){
+        User user = userRepository.findById(userId).orElseThrow(()-> 
+        new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        user.setNickname(request.getNickname());
+        user.setProfileImg(request.getProfileImg());
+
+        User updated = userRepository.save(user);
+
+        return UserResponse.from(updated);
+    }
+
+
 }
