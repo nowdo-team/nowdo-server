@@ -2,6 +2,8 @@ package com.hsjh.nowdo.service;
 
 import org.springframework.stereotype.Service;
 
+import com.hsjh.nowdo.common.exception.NotFoundException;
+import com.hsjh.nowdo.common.exception.UnauthorizedException;
 import com.hsjh.nowdo.domain.user.User;
 import com.hsjh.nowdo.dto.auth.LoginRequest;
 import com.hsjh.nowdo.dto.user.UserResponse;
@@ -21,13 +23,14 @@ public class AuthService {
     //로그인 기능 (클라이언트)
     public UserResponse login(LoginRequest request){
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 이메일입니다."));
 
         if(!user.getPassword().equals(request.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new UnauthorizedException("잘못된 비밀번호입니다.");
         }
 
         return UserResponse.from(user);
     }
+
 
 }
