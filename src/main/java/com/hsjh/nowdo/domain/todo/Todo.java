@@ -2,62 +2,67 @@ package com.hsjh.nowdo.domain.todo;
 
 import com.hsjh.nowdo.domain.user.User;
 import jakarta.persistence.*;
-// import lombok.Getter;
-// import lombok.Setter;
 import java.time.LocalDateTime;
 
-@Entity
-// @Getter @Setter
+@Entity // 데이터베이스 테이블과 매핑되는 Entity Class, JPA/Hibernate가 이 객체를 관리하고 DB에 저장/조회할 수 있게함. 
+@Table(name = "todos") // DB 테이블 이름
 public class Todo {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id // Primary Key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
     private Long id;
 
-    // List 내용 구조체 구성
-    @Column(nullable = false)
-    private String title;
-
-    private String content;
-
-    private boolean completed = false;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    //User와의 연결 (N : 1)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)  // 여러 Todo는 한 명의 User (N : 1), fetch = Lazy : 지연 로딩, 필요한 데이터만 dto로 선택적 조회
+    @JoinColumn(name = "user_id", nullable = false) // db column name, NOT NULL
     private User user;
 
-    @PrePersist
-    public void onCreate(){
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+    @Column(nullable = false, length = 255)
+    private String content;
 
-    @PreUpdate
-    public void onUpdate(){
-        this.updatedAt = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    private LocalDateTime dueDate;
 
-    //Getter & Setter
+    @Column(nullable = false)
+    private boolean completed = false;
 
-    public String getTitle() {return title;}
-    public void setTitle(String title){
-        this.title = title;
-    }
+    @Enumerated(EnumType.STRING)    // Enum을 문자열로 DB에 저장
+    @Column(nullable = false)
+    private TodoPriority priority = TodoPriority.MEDIUM;
 
-    public String getContent() {return content;}
-    public void setContent (String content){
+    @Column(length = 50)
+    private String category;
+
+    protected Todo() {} // (JPA 필수) 일반 코드에서 쓰이지 않고, JPA만 호출 가능하게 함
+
+    // 생성자
+    public Todo(User user, String content, LocalDateTime dueDate,
+                TodoPriority priority, String category) {
+        this.user = user;
         this.content = content;
+        this.dueDate = dueDate;
+        this.priority = priority != null ? priority : TodoPriority.MEDIUM;
+        this.category = category;
     }
 
-    public boolean getCompleted(){return completed;}
-    public void setCompleted(boolean completed){
-        this.completed = completed;
+    // Getter
+    public Long getId() { return id; }
+    public User getUser() { return user; }
+    public String getContent() { return content; }
+    public LocalDateTime getDueDate() { return dueDate; }
+    public boolean isCompleted() { return completed; }
+    public TodoPriority getPriority() { return priority; }
+    public String getCategory() { return category; }
+
+    // Setter
+    public void toggleCompleted() {
+        this.completed = !this.completed;
     }
 
-    public LocalDateTime getCreatedAt(){ return createdAt; }
-    public LocalDateTime getUpdatedAt(){ return updatedAt; }
-
+    public void update(String content, LocalDateTime dueDate,
+                       TodoPriority priority, String category) {
+        this.content = content;
+        this.dueDate = dueDate;
+        this.priority = priority != null ? priority : this.priority;
+        this.category = category;
+    }
 }
