@@ -1,9 +1,15 @@
 package com.hsjh.nowdo.dto.todo;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TodoRequest {
 
-    private String content;
-    private String dueDate;
+    private String content;       
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dueDate;
     private String priority;
     private String category;
 
@@ -13,7 +19,7 @@ public class TodoRequest {
         return content;
     }
 
-    public String getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
