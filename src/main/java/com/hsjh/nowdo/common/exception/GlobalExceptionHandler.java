@@ -54,8 +54,6 @@ public class GlobalExceptionHandler {
         body.put("error", "예상치 못한 오류가 발생했습니다.");
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-<<<<<<< HEAD
-=======
 
     //404 Not Found 처리
     @ExceptionHandler(NotFoundException.class)
@@ -70,5 +68,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(new ErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()));
     }
->>>>>>> Feature/Exception_And_UserUpdate
 }

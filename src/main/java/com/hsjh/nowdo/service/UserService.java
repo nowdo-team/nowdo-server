@@ -1,20 +1,13 @@
 package com.hsjh.nowdo.service;
 
-<<<<<<< HEAD
-=======
 import com.hsjh.nowdo.common.exception.NotFoundException;
 import com.hsjh.nowdo.common.exception.UnauthorizedException;
->>>>>>> Feature/Exception_And_UserUpdate
 import com.hsjh.nowdo.domain.user.User;
 import com.hsjh.nowdo.domain.user.UserStatus;
 import com.hsjh.nowdo.dto.user.UpdateProfileRequest;
 import com.hsjh.nowdo.dto.user.UserRegisterRequest;
 import com.hsjh.nowdo.dto.user.UserResponse;
 import com.hsjh.nowdo.repository.UserRepository;
-<<<<<<< HEAD
-=======
-
->>>>>>> Feature/Exception_And_UserUpdate
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,10 +45,6 @@ public class UserService {
     }
     // 마이페이지 조회
     public UserResponse getMyInfo (Long userId){
-<<<<<<< HEAD
-        User user = userRepository.findById(userId).orElseThrow(()->
-        new IllegalArgumentException("존재하지 않는 사용자입니다."));
-=======
 
         if(userId == null){
             throw new UnauthorizedException("로그인이 필요합니다.");
@@ -63,19 +52,10 @@ public class UserService {
 
         User user = userRepository.findById(userId).orElseThrow(()->
         new NotFoundException("존재하지 않는 사용자입니다."));
->>>>>>> Feature/Exception_And_UserUpdate
 
         return UserResponse.from(user);
     }
     // 프로필 수정
-<<<<<<< HEAD
-    public UserResponse updateProfile(Long userId, UpdateProfileRequest request){
-        User user = userRepository.findById(userId).orElseThrow(()-> 
-        new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        user.setNickname(request.getNickname());
-        user.setProfileImg(request.getProfileImg());
-=======
     public UserResponse updateProfile(Long userId, UpdateProfileRequest updateRequest){
 
         if(userId == null){
@@ -87,7 +67,6 @@ public class UserService {
 
         user.setNickname(updateRequest.getNickname());
         user.setProfileImg(updateRequest.getProfileImg());
->>>>>>> Feature/Exception_And_UserUpdate
 
         User updated = userRepository.save(user);
 
