@@ -2,8 +2,6 @@ package com.hsjh.nowdo.dto.todo;
 
 import java.time.LocalDateTime;
 
-import org.springframework.cglib.core.Local;
-
 import com.hsjh.nowdo.domain.todo.Todo;
 
 public class TodoResponse {
