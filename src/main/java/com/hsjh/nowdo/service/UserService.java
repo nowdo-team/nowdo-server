@@ -8,6 +8,7 @@ import com.hsjh.nowdo.dto.user.UpdateProfileRequest;
 import com.hsjh.nowdo.dto.user.UserRegisterRequest;
 import com.hsjh.nowdo.dto.user.UserResponse;
 import com.hsjh.nowdo.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,20 @@ public class UserService {
         // DTO로 변환해서 반환
         return UserResponse.from(saved);
     }
+
+    // 로그인 기능
+    public UserResponse login(String email, String password) {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("이메일이 존재하지 않습니다."));
+
+    if (!user.getPassword().equals(password)) {
+        throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
+    }
+
+    return UserResponse.from(user);
+    }
+
+
     // 마이페이지 조회
     public UserResponse getMyInfo (Long userId){
 

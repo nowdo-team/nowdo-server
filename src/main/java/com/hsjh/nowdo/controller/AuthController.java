@@ -12,12 +12,12 @@ import com.hsjh.nowdo.dto.user.UserResponse;
 import com.hsjh.nowdo.service.AuthService;
 import com.hsjh.nowdo.service.UserService;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +35,7 @@ public class AuthController {
         this.userService = userService;
     }
 
+    //회원가입 구조
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterRequest request){
         UserResponse response = userService.register(request);
@@ -81,5 +82,6 @@ public class AuthController {
         UserResponse response = userService.updateProfile(userId, updateRequest);
         return ResponseEntity.ok(response);
 
-    }    
+    }
+    
 }
