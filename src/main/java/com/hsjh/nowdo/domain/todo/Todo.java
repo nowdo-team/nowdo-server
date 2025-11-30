@@ -59,10 +59,11 @@ public class Todo {
     }
 
     public void update(String content, LocalDateTime dueDate,
-                       TodoPriority priority, String category) {
+                       TodoPriority priority, String category, boolean completed) {
         this.content = content;
         this.dueDate = dueDate;
         this.priority = priority != null ? priority : this.priority;
         this.category = category;
+        this.completed = completed;
     }
 }
