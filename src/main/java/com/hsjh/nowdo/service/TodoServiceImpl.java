@@ -9,7 +9,6 @@ import com.hsjh.nowdo.dto.todo.TodoRequest;
 import com.hsjh.nowdo.dto.todo.TodoResponse;
 import com.hsjh.nowdo.repository.TodoRepository;
 import com.hsjh.nowdo.repository.UserRepository;
-
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,34 +26,35 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-public TodoResponse createTodo(Long userId, TodoRequest requestDto) {
-    
-    if (userId == null){
-        throw new UnauthorizedException("userId가 없습니다, 세션 확인");
+    public TodoResponse createTodo(Long userId, TodoRequest requestDto) {
+        if (userId == null) {
+            throw new UnauthorizedException("userId가 없습니다, 세션 확인");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("유저 없음"));
+
+        LocalDateTime dueDate = requestDto.getDueDate();
+        TodoPriority priority = parsePriority(requestDto.getPriority(), TodoPriority.MEDIUM);
+
+        Todo todo = new Todo(
+                user,
+                requestDto.getContent(),
+                dueDate,
+                priority,
+                requestDto.getCategory()
+        );
+        if (requestDto.isCompleted()) {
+            todo.toggleCompleted();
+        }
+
+        return new TodoResponse(todoRepository.save(todo));
     }
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException("유저 없음"));
-
-    LocalDateTime dueDate = requestDto.getDueDate(); // ✔ 이미 LocalDateTime
-    TodoPriority priority = TodoPriority.valueOf(requestDto.getPriority());
-
-    Todo todo = new Todo(
-            user,
-            requestDto.getContent(),
-            dueDate,
-            priority,
-            requestDto.getCategory()
-    );
-
-    return new TodoResponse(todoRepository.save(todo));
-}
-
 
     @Override
     public List<TodoResponse> getTodos(Long userId) {
-        if (userId == null){
-        throw new UnauthorizedException("userId가 없습니다, 세션 확인");
-    }
+        if (userId == null) {
+            throw new UnauthorizedException("userId가 없습니다, 세션 확인");
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("유저 없음"));
@@ -67,36 +67,55 @@ public TodoResponse createTodo(Long userId, TodoRequest requestDto) {
 
     @Override
     public TodoResponse updateTodo(Long userId, Long todoId, TodoRequest dto) {
-        if (todoId == null){
-        throw new UnauthorizedException("todoId가 없습니다, 세션 확인");
-    }
+        if (todoId == null) {
+            throw new UnauthorizedException("todoId가 없습니다, 세션 확인");
+        }
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new NotFoundException("TODO 없음"));
 
-        if (!todo.getUser().getId().equals(userId))
+        if (!todo.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("권한 없음");
+        }
 
-    todo.update(
-        dto.getContent(),
-        dto.getDueDate(),  // ✔ LocalDateTime 그대로
-        TodoPriority.valueOf(dto.getPriority()),
-        dto.getCategory()
-);
+        String content = dto.getContent() != null ? dto.getContent() : todo.getContent();
+        LocalDateTime dueDate = dto.getDueDate() != null ? dto.getDueDate() : todo.getDueDate();
+        TodoPriority priority = parsePriority(dto.getPriority(), todo.getPriority());
+        String category = dto.getCategory() != null ? dto.getCategory() : todo.getCategory();
+
+        todo.update(
+                content,
+                dueDate,
+                priority,
+                category,
+                dto.isCompleted()
+        );
 
         return new TodoResponse(todoRepository.save(todo));
     }
 
     @Override
     public void deleteTodo(Long userId, Long todoId) {
-        if (todoId == null){
+        if (todoId == null) {
             throw new UnauthorizedException("userId가 없습니다, 세션 확인");
-    }
+        }
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new NotFoundException("TODO 없음"));
 
-        if (!todo.getUser().getId().equals(userId))
+        if (!todo.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("권한 없음");
+        }
 
         todoRepository.delete(todo);
+    }
+
+    private TodoPriority parsePriority(String priority, TodoPriority defaultPriority) {
+        if (priority == null || priority.isBlank()) {
+            return defaultPriority;
+        }
+        try {
+            return TodoPriority.valueOf(priority);
+        } catch (IllegalArgumentException ex) {
+            return defaultPriority;
+        }
     }
 }
