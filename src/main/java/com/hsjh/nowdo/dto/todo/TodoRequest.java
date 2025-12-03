@@ -12,6 +12,7 @@ public class TodoRequest {
     private LocalDateTime dueDate;
     private String priority;
     private String category;
+    private boolean completed;
 
     public TodoRequest() {}
 
@@ -29,5 +30,9 @@ public class TodoRequest {
 
     public String getCategory() {
         return category;
+    }
+
+    public boolean isCompleted() {
+        return completed;
     }
 }
