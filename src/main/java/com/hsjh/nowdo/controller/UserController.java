@@ -29,6 +29,15 @@ public class UserController {
         this.userService = userService;
     }
 
+    protected Long getUserIdFromSession(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+
+        if(session == null || session.getAttribute("userId") == null){
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+        return (Long) session.getAttribute("userId");
+    }
+
     // 회원가입
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterRequest request) {

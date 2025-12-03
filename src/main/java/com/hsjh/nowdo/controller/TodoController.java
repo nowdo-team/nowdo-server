@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/todos")
-public class TodoController {
+public class TodoController{
 
     private final TodoService todoService;
 

@@ -66,7 +66,7 @@ public class AuthController {
         UserResponse response = userService.getMyInfo(userId);
         return ResponseEntity.ok(response);
     }
-
+    
     @PatchMapping("/profile")
     public ResponseEntity<UserResponse> updateProfile(
         HttpServletRequest request, @RequestBody UpdateProfileRequest updateRequest

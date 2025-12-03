@@ -88,5 +88,18 @@ public class UserService {
         return UserResponse.from(updated);
     }
 
+    // 프로필 이미지 변경
+    public void updateProfileImage(Long userId, String fileName){
+        if(userId == null){
+            throw new UnauthorizedException("사용자를 찾을 수 없습니다.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(()
+        -> new NotFoundException("사용자 없음"));
+
+        user.setProfileImg(fileName);
+        userRepository.save(user);
+    }
+
 
 }
