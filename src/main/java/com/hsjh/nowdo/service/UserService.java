@@ -4,11 +4,11 @@ import com.hsjh.nowdo.common.exception.NotFoundException;
 import com.hsjh.nowdo.common.exception.UnauthorizedException;
 import com.hsjh.nowdo.domain.user.User;
 import com.hsjh.nowdo.domain.user.UserStatus;
+import com.hsjh.nowdo.dto.user.ChangePasswordRequest;
 import com.hsjh.nowdo.dto.user.UpdateProfileRequest;
 import com.hsjh.nowdo.dto.user.UserRegisterRequest;
 import com.hsjh.nowdo.dto.user.UserResponse;
 import com.hsjh.nowdo.repository.UserRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,14 +83,12 @@ public class UserService {
         }
 
         User user = userRepository.findById(userId).orElseThrow(()-> 
-        new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        new NotFoundException("사용자를 찾을 수 없습니다."));
 
         user.setNickname(updateRequest.getNickname());
         user.setProfileImg(updateRequest.getProfileImg());
 
-        User updated = userRepository.save(user);
-
-        return UserResponse.from(updated);
+        return UserResponse.from(user);
     }
 
     // 프로필 이미지 변경
@@ -104,6 +102,21 @@ public class UserService {
 
         user.setProfileImg(fileName);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void changePassword(Long userId, ChangePasswordRequest req){
+        if(userId == null){
+            throw new UnauthorizedException("사용자를 찾을 수 없습니다.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (!user.getPassword().equals(req.getCurrentPassword())){
+            throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setPassword(req.getNewPassword());
     }
 
 
