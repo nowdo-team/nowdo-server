@@ -45,6 +45,11 @@ public class UserService {
         return UserResponse.from(saved);
     }
 
+    @Transactional(readOnly = true)
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
     // 로그인 기능
     public UserResponse login(String email, String password) {
     User user = userRepository.findByEmail(email)

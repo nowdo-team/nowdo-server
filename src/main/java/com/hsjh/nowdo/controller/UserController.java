@@ -1,5 +1,6 @@
 package com.hsjh.nowdo.controller;
 
+import com.hsjh.nowdo.dto.user.EmailCheckResponse;
 import com.hsjh.nowdo.dto.user.UserRegisterRequest;
 import com.hsjh.nowdo.dto.user.UserResponse;
 import com.hsjh.nowdo.common.exception.UnauthorizedException;
@@ -43,6 +44,12 @@ public class UserController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterRequest request) {
         UserResponse response = userService.register(request);
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/check-email")
+    public ResponseEntity<EmailCheckResponse> checkEmail(@RequestParam("email") String email) {
+        boolean available = userService.isEmailAvailable(email);
+        return ResponseEntity.ok(new EmailCheckResponse(available));
     }
 
     //로그인
