@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
 
+    private static final String DEFAULT_PROFILE_IMAGE = "https://i.namu.wiki/i/7S01tsfachbRAcz7lX0505rWNDFzpX7GFLNYgFuWRydF6vp-K6eLvolDM33U24NbS59SZ-YK-fzxgI62UDJS5A.webp";
+
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -36,7 +38,7 @@ public class UserService {
         user.setPassword(request.getPassword());  // 나중에 반드시 암호화 필요
         user.setNickname(request.getNickname());
         user.setStatus(UserStatus.ACTIVE);
-        user.setProfileImg(null);
+        user.setProfileImg(DEFAULT_PROFILE_IMAGE);
 
         // DB 저장
         User saved = userRepository.save(user);
@@ -117,6 +119,20 @@ public class UserService {
         }
 
         user.setPassword(req.getNewPassword());
+    }
+
+    @Transactional(readOnly = true)
+    public void verifyPassword(Long userId, String password) {
+        if (userId == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+            new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (!user.getPassword().equals(password)) {
+            throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
+        }
     }
 
 
